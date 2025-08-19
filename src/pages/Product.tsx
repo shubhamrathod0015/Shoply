@@ -4,7 +4,6 @@ import { useRoute } from "wouter";
 import { Button } from "../components/ui/button";
 import { products } from "../data/products";
 import { Star, ShoppingCart, ChevronLeft, Heart } from "lucide-react";
-import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 
 const ProductPage: React.FC = () => {
@@ -13,10 +12,12 @@ const ProductPage: React.FC = () => {
   const product = products.find((p) => p.id === productId);
 
   const handleAddToCart = () => {
-    toast({
-      title: "Added to cart",
-      description: `${product?.name} has been added to your cart`,
-    });
+    toast(
+      <>
+        <span className="font-semibold">Added to cart</span>
+        <div className="text-sm text-gray-600">{product?.name} has been added to your cart</div>
+      </>
+    );
   };
 
   if (!product) {
