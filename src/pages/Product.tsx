@@ -7,15 +7,17 @@ import { Star, ShoppingCart, ChevronLeft, Heart } from "lucide-react";
 import { toast } from "sonner";
 
 const ProductPage: React.FC = () => {
-  const [match, params] = useRoute("/product/:id");
+  const [, params] = useRoute("/product/:id");
   const productId = params ? parseInt(params.id) : null;
-  const product = products.find((p) => p.id === productId);
+  const product = products.find((p) => Number(p.id) === productId);
 
   const handleAddToCart = () => {
     toast(
       <>
         <span className="font-semibold">Added to cart</span>
-        <div className="text-sm text-gray-600">{product?.name} has been added to your cart</div>
+        <div className="text-sm text-gray-600">
+          {product?.name} has been added to your cart
+        </div>
       </>
     );
   };
@@ -83,7 +85,7 @@ const ProductPage: React.FC = () => {
                       <Star
                         key={i}
                         className={`h-5 w-5 ${
-                          i < product.rating
+                          i < product.rating.rate
                             ? "fill-yellow-400 text-yellow-400"
                             : "text-gray-300"
                         }`}
@@ -91,7 +93,7 @@ const ProductPage: React.FC = () => {
                     ))}
                   </div>
                   <span className="ml-2 text-gray-600">
-                    ({product.reviews} reviews)
+                    ({product.reviews.length} reviews)
                   </span>
                 </div>
               </div>

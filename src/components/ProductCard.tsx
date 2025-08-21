@@ -1,46 +1,49 @@
-// src/components/ProductCard.tsx
-import React from 'react';
-import { Link } from 'wouter';
-import { Button } from './ui/button';
-import { Star } from 'lucide-react';
-import type { Product } from '../types';
+import type { Product } from "../types";
+import { Link } from "wouter";
+import { Button } from "./ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { useCartStore } from "../store/cartStore";
 
 interface ProductCardProps {
   product: Product;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard = ({ product }: ProductCardProps) => {
+  const { addItem } = useCartStore();
+
   return (
-    <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
-      <div className="aspect-square overflow-hidden">
-        <img 
-          src={product.image} 
-          alt={product.name}
-          className="w-full h-full object-cover transition-transform hover:scale-105"
-        />
-      </div>
-      <div className="p-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-semibold line-clamp-1">{product.name}</h3>
-            <p className="text-sm text-gray-500 capitalize">{product.category}</p>
+    <Card className="flex flex-col overflow-hidden h-full transition-shadow duration-300 hover:shadow-xl">
+      <CardHeader className="p-0">
+        <Link href={`/product/${product.id}`}>
+          <div className="aspect-square overflow-hidden cursor-pointer">
+            <img
+              src={product.image}
+              alt={product.title}
+              className="w-full h-full object-contain p-4 transition-transform duration-300 hover:scale-105"
+            />
           </div>
-          <div className="flex items-center bg-primary/10 px-2 py-1 rounded">
-            <Star className="h-4 w-4 fill-primary text-primary" />
-            <span className="text-sm ml-1">{product.rating}</span>
-          </div>
-        </div>
-        
-        <div className="mt-3 flex justify-between items-center">
-          <p className="text-lg font-bold">${product.price.toFixed(2)}</p>
-          <Link to={`/product/${product.id}`}>
-            <Button size="sm" className="mt-2">
-              View Details
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </div>
+        </Link>
+      </CardHeader>
+      <CardContent className="p-4 flex-grow">
+        <Link href={`/product/${product.id}`}>
+          <CardTitle className="text-lg font-semibold leading-tight h-12 overflow-hidden cursor-pointer hover:text-blue-600">
+            {/* {product.title} */}
+          </CardTitle>
+        </Link>
+      </CardContent>
+      <CardFooter className="p-4 flex justify-between items-center">
+        <p className="text-xl font-bold text-gray-800">
+          ${product.price.toFixed(2)}
+        </p>
+        <Button onClick={() => addItem(product)}>Add to Cart</Button>
+      </CardFooter>
+    </Card>
   );
 };
 
