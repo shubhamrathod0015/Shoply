@@ -3,7 +3,7 @@ import ProductCard from "../components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { useProducts } from "../hooks/useProducts";
-import type { Product } from "../types";
+// import type { Product } from "../types";
 
 const HomePage = () => {
   const { products, loading, error } = useProducts();

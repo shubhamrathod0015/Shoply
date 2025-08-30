@@ -33,13 +33,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <CardContent className="p-4 flex-grow">
         <Link href={`/product/${product.id}`}>
           <CardTitle className="text-lg font-semibold leading-tight h-12 overflow-hidden cursor-pointer hover:text-blue-600">
-            {/* {product.title} */}
+            {product.title}
           </CardTitle>
         </Link>
       </CardContent>
       <CardFooter className="p-4 flex justify-between items-center">
         <p className="text-xl font-bold text-gray-800">
-          ${product.price.toFixed(2)}
+          RS- {product.price.toFixed(2)}
         </p>
         <Button onClick={() => addItem(product)}>Add to Cart</Button>
       </CardFooter>

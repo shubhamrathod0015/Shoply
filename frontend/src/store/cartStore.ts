@@ -14,6 +14,7 @@ export const useCartStore = create<CartState>()(
     persist(
         (set, get) => ({
             items: [],
+            
             addItem: (product) => {
                 const { items } = get();
                 const itemExists = items.find((item) => item.id === product.id);
@@ -32,9 +33,10 @@ export const useCartStore = create<CartState>()(
                     toast.success(`"${product.title}" added to cart!`);
                 }
             },
+
             removeItem: (productId) => {
                 set({
-                    items: get().items.filter((item) => item.id !== String(productId)),
+                    items: get().items.filter((item) => item.id !== productId),
                 });
                 toast.error("Item removed from cart.");
             },

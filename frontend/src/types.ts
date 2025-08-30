@@ -8,13 +8,14 @@ export interface Product {
   brand: string;
   sku: string;
 
-  id: string;
+  // id: string;
+  id: number;
   title: string;
   name: string;
   discount?: number;
   oldPrice?: number;
   reviews: Review[];
-    price: number;
+  price: number;
   description: string;
   category: string;
   image: string;
