@@ -14,7 +14,7 @@ const ProfilePage = () => {
       setLoading(false);
       return;
     }
-    fetch(`${API_URL}/profile`, {
+    fetch(`${API_URL}/api/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useRoute } from "wouter";
+import { useRoute, useLocation } from "wouter";
 import type { Product } from "../types";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cartStore";
@@ -15,6 +15,7 @@ const ProductDetailPage = () => {
   const [error, setError] = useState<Error | null>(null);
   const { addItem } = useCartStore();
   const { isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     if (!productId || productId === "undefined") {
@@ -45,25 +46,38 @@ const ProductDetailPage = () => {
   }, [productId]);
 
   if (loading)
-    return <p className="text-center py-10">Loading product details...</p>;
+    return (
+      <p className="text-center py-10 text-lg">Loading product details...</p>
+    );
   if (error)
     return (
       <p className="text-center py-10 text-red-500">Error: {error.message}</p>
     );
   if (!product) return <p className="text-center py-10">Product not found.</p>;
 
+  // Helper for rating
+  const getRating = (rating: Product["rating"]) => {
+    if (typeof rating === "object" && rating !== null) return rating.rate;
+    if (typeof rating === "number") return rating;
+    return 0;
+  };
+  const getReviewCount = (rating: Product["rating"]) => {
+    if (typeof rating === "object" && rating !== null) return rating.count;
+    return Array.isArray(product.reviews) ? product.reviews.length : 0;
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-        <div className="bg-white p-8 rounded-lg border flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg border flex items-center justify-center shadow">
           <img
             src={product.image}
             alt={product.title || product.name}
-            className="max-h-96 object-contain"
+            className="max-h-96 object-contain rounded"
           />
         </div>
         <div className="flex flex-col justify-center">
-          <span className="text-sm font-medium text-blue-600 uppercase tracking-wide">
+          <span className="text-sm font-medium text-blue-600 uppercase tracking-wide mb-2">
             {typeof product.category === "object" && product.category !== null
               ? (product.category as { name?: string }).name ?? ""
               : product.category}
@@ -72,40 +86,36 @@ const ProductDetailPage = () => {
             {product.title || product.name}
           </h1>
           <div className="flex items-center gap-2 text-gray-600 mb-4">
-            <span>⭐ {product.rating?.rate ?? product.rating ?? 0}</span>
-            <span>({product.rating?.count ?? 0} reviews)</span>
+            <span>⭐ {getRating(product.rating)}</span>
+            <span>({getReviewCount(product.rating)} reviews)</span>
           </div>
           <p className="text-gray-700 text-lg mb-6">{product.description}</p>
           <div className="flex items-center gap-4">
-            <span className="text-4xl font-bold">
+            <span className="text-4xl font-bold text-blue-700">
               ${product.price.toFixed(2)}
             </span>
             <Button
               size="lg"
+              className="shadow"
               onClick={() => {
-                if (product && isAuthenticated) {
-                  addItem({
-                    id:
-                      product.id ??
-                      (product as any)._id ??
-                      product.sku ??
-                      product.name,
-                    title: product.title || product.name || "",
-                    price: product.price,
-                    image: product.image,
-                    quantity: 1,
-                  });
+                if (!isAuthenticated) {
+                  setLocation("/login");
+                  return;
                 }
+                addItem({
+                  id:
+                    product.id ??
+                    (product as any)._id ??
+                    product.sku ??
+                    product.name,
+                  title: product.title || product.name || "",
+                  price: product.price,
+                  image: product.image,
+                  quantity: 1,
+                } as any);
               }}
-              disabled={!isAuthenticated}
             >
-              {isAuthenticated ? (
-                "Add to Cart"
-              ) : (
-                <a href="/login" className="text-blue-600 underline">
-                  Login to Add to Cart
-                </a>
-              )}
+              Add to Cart
             </Button>
           </div>
         </div>

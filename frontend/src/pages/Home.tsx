@@ -1,49 +1,77 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import ProductCard from "../components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { useProducts } from "../hooks/useProducts";
-// import type { Product } from "../types";
+import { useAuth } from "../context/AuthContext";
+import { useEffect, useState } from "react";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const HomePage = () => {
   const { products, loading, error } = useProducts();
-  // Ensure products is always an array
+  const { isAuthenticated, token } = useAuth();
+  const [, setLocation] = useLocation();
   const featuredProducts = Array.isArray(products) ? products.slice(0, 4) : [];
 
-  // Helper to get a valid product id for routing
+  const [profile, setProfile] = useState<{
+    name: string;
+    email: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      fetch(`${API_URL}/api/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data) setProfile({ name: data.name, email: data.email });
+        })
+        .catch(() => setProfile(null));
+    } else {
+      setProfile(null);
+    }
+  }, [isAuthenticated, token]);
+
   const getProductId = (product: any) =>
     product.id ?? product._id ?? product.sku ?? product.name;
+
+  // Handler for protected navigation
+  const handleProtectedNav = (path: string) => {
+    if (!isAuthenticated) {
+      setLocation("/login");
+    } else {
+      setLocation(path);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-16">
       {/* Hero Section */}
-      <section
-        className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-lg"
-        aria-labelledby="hero-heading"
-      >
+      <section className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-lg">
         <div className="grid md:grid-cols-2 items-center gap-8 p-8 md:p-12">
           <div className="max-w-xl">
-            <h1
-              id="hero-heading"
-              className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 tracking-tight"
-            >
-              Discover Your Next Favorite Thing
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 tracking-tight">
+              Welcome to <span className="text-blue-700">Shoply</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8">
-              Shop the latest trends. Quality products, unbeatable prices,
-              delivered to your door.
+              Discover the latest trends and unbeatable prices. Shop quality
+              products delivered to your door.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link href="/products">
-                <Button size="lg">
-                  Shop All Products <ChevronRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/cart">
-                <Button variant="outline" size="lg">
-                  View Cart
-                </Button>
-              </Link>
+              <Button size="lg" onClick={() => handleProtectedNav("/products")}>
+                Shop All Products <ChevronRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => handleProtectedNav("/cart")}
+              >
+                View Cart
+              </Button>
             </div>
           </div>
           <div className="hidden md:flex justify-center items-center">
@@ -65,11 +93,13 @@ const HomePage = () => {
           >
             Featured Products
           </h2>
-          <Link href="/products">
-            <Button variant="link" className="text-base text-blue-600">
-              View All <ChevronRight className="ml-1 h-4 w-4" />
-            </Button>
-          </Link>
+          <Button
+            variant="link"
+            className="text-base text-blue-600"
+            onClick={() => handleProtectedNav("/products")}
+          >
+            View All <ChevronRight className="ml-1 h-4 w-4" />
+          </Button>
         </div>
         {loading && <p>Loading products...</p>}
         {error && <p className="text-red-500">Error: {error.message}</p>}
@@ -85,7 +115,6 @@ const HomePage = () => {
           </div>
         )}
       </section>
-      {/* Add more sections for categories, login/signup, and user profile as you build those APIs */}
     </div>
   );
 };

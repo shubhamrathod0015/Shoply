@@ -5,29 +5,30 @@ import User from "../models/User.js";
 export const authenticate = async (req, res, next) => {
   const header = req.headers.authorization;
   if (!header || !header.startsWith("Bearer ")) {
-    return res
+    res
       .status(401)
       .json({ message: "Missing or invalid authorization header" });
+    return;
   }
 
   const token = header.split(" ")[1];
   const jwtSecret = process.env.JWT_SECRET;
   if (!jwtSecret) {
-    return res
-      .status(500)
-      .json({ message: "JWT secret not set in environment" });
+    res.status(500).json({ message: "JWT secret not set in environment" });
+    return;
   }
 
   try {
     const payload = jwt.verify(token, jwtSecret);
     const user = await User.findById(payload.id).select("-password");
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      res.status(401).json({ message: "User not found" });
+      return;
     }
     req.user = user;
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Token invalid or expired" });
+    res.status(401).json({ message: "Token invalid or expired" });
   }
 };
 

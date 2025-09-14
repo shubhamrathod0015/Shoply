@@ -40,7 +40,7 @@ async function seedProducts() {
     brand: "FakeStore",
     sku: p.id.toString(),
     stock: 100,
-    rating: p.rating?.rate || 0,
+    rating: p.rating?.rate || 0, // store as number (average)
     reviews: [], // must be an array
   }));
 

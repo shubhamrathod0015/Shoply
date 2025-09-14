@@ -8,15 +8,25 @@ import { successResponse, errorResponse } from "../utils/responseHandler.js";
  */
 export const getCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ user: req.user._id })
-      .populate("items.product", "name price image");
+    const cart = await Cart.findOne({ user: req.user._id }).populate(
+      "items.product",
+      "name price image"
+    );
 
-    if (!cart) return errorResponse(res, 404, "Cart not found");
-
-    return successResponse(res, { cart }, "Cart fetched successfully");
+    if (!cart) {
+      // Instead of error, return empty cart
+      return res.json({
+        success: true,
+        cart: {
+          user: req.user._id,
+          items: [],
+          total: 0,
+        },
+      });
+    }
+    res.json({ success: true, cart });
   } catch (error) {
-    console.error("Error fetching cart:", error);
-    return errorResponse(res, 500, "Server error");
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 

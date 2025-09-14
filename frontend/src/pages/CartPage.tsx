@@ -6,7 +6,7 @@ import { Link } from "wouter";
 const CartPage = () => {
   const { items, removeItem, clearCart } = useCartStore();
   const totalPrice = items.reduce(
-    (total, item) => total + item.price * item.quantity,
+    (total, item) => total + (item.price ?? 0) * (item.quantity ?? 1),
     0
   );
 
@@ -22,7 +22,7 @@ const CartPage = () => {
       </div>
 
       {items.length === 0 ? (
-        <div className="text-center py-16 border-2 border-dashed rounded-lg">
+        <div className="text-center py-16 border-2 border-dashed rounded-lg bg-white shadow">
           <h2 className="text-2xl font-semibold text-gray-700">
             Your cart is empty.
           </h2>
@@ -39,28 +39,39 @@ const CartPage = () => {
             {items.map((item) => (
               <div
                 key={item.id ?? item.sku ?? item.name}
-                className="flex items-center gap-4 p-4 border rounded-lg bg-white"
+                className="flex items-center gap-4 p-4 border rounded-lg bg-white shadow-sm hover:shadow transition"
               >
                 <img
                   src={item.image}
                   alt={item.title || item.name}
-                  className="w-20 h-20 object-contain"
+                  className="w-20 h-20 object-contain rounded"
                 />
                 <div className="flex-grow">
-                  <h3 className="font-semibold">{item.title || item.name}</h3>
+                  <h3 className="font-semibold text-lg">
+                    {item.title || item.name}
+                  </h3>
                   <p className="text-sm text-gray-500">
                     Quantity: {item.quantity}
                   </p>
                 </div>
-                <p className="font-bold">
+                <p className="font-bold text-blue-700">
                   RS- {(item.price * item.quantity).toFixed(2)}
                 </p>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() =>
-                    removeItem(item.id ?? item.sku ?? item.name)
-                  }
+                  onClick={() => {
+                    if (typeof item.id === "number") {
+                      removeItem(item.id);
+                    } else {
+                      // Optionally handle the case where id is not a number
+                      console.error(
+                        "Cannot remove item: id is not a number",
+                        item
+                      );
+                    }
+                  }}
+                  aria-label="Remove item"
                 >
                   <Trash2 className="h-5 w-5 text-red-500" />
                 </Button>
@@ -69,7 +80,7 @@ const CartPage = () => {
           </div>
 
           <div className="lg:col-span-1">
-            <div className="p-6 bg-gray-50 rounded-lg border sticky top-24">
+            <div className="p-6 bg-gray-50 rounded-lg border sticky top-24 shadow">
               <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
               <div className="flex justify-between mb-2">
                 <span>Subtotal</span>
