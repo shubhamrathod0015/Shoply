@@ -14,26 +14,29 @@ interface ProductCardProps {
   product: Product;
 }
 
+const getProductId = (product: Product) =>
+  product.id ?? (product as any)._id ?? product.sku ?? product.name;
+
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addItem } = useCartStore();
 
   return (
     <Card className="flex flex-col overflow-hidden h-full transition-shadow duration-300 hover:shadow-xl">
       <CardHeader className="p-0">
-        <Link href={`/product/${product.id}`}>
+        <Link href={`/product/${getProductId(product)}`}>
           <div className="aspect-square overflow-hidden cursor-pointer">
             <img
               src={product.image}
-              alt={product.title}
+              alt={product.title || product.name}
               className="w-full h-full object-contain p-4 transition-transform duration-300 hover:scale-105"
             />
           </div>
         </Link>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
-        <Link href={`/product/${product.id}`}>
+        <Link href={`/product/${getProductId(product)}`}>
           <CardTitle className="text-lg font-semibold leading-tight h-12 overflow-hidden cursor-pointer hover:text-blue-600">
-            {product.title}
+            {product.title || product.name}
           </CardTitle>
         </Link>
       </CardContent>

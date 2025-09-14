@@ -1,4 +1,3 @@
-
 import { Switch, Route } from "wouter";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -9,6 +8,20 @@ import CategoryPage from "./pages/CategoryPage";
 import CartPage from "./pages/CartPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import { Toaster } from "sonner";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import ProfilePage from "./pages/ProfilePage";
+import OrdersPage from "./pages/OrdersPage";
+
+function PrivateRoute({ component: Component, ...rest }: any) {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  if (!token) {
+    window.location.href = "/login";
+    return null;
+  }
+  return <Component {...rest} />;
+}
 
 function App() {
   return (
@@ -21,6 +34,16 @@ function App() {
           <Route path="/product/:id" component={ProductDetailPage} />
           <Route path="/category/:name" component={CategoryPage} />
           <Route path="/cart" component={CartPage} />
+          <Route path="/login" component={LoginPage} />
+          <Route path="/signup" component={SignupPage} />
+          <Route
+            path="/profile"
+            component={() => <PrivateRoute component={ProfilePage} />}
+          />
+          <Route
+            path="/orders"
+            component={() => <PrivateRoute component={OrdersPage} />}
+          />
           <Route>
             <NotFoundPage />
           </Route>

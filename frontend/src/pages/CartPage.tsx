@@ -38,16 +38,16 @@ const CartPage = () => {
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
               <div
-                key={item.id}
+                key={item.id ?? item.sku ?? item.name}
                 className="flex items-center gap-4 p-4 border rounded-lg bg-white"
               >
                 <img
                   src={item.image}
-                  alt={item.title}
+                  alt={item.title || item.name}
                   className="w-20 h-20 object-contain"
                 />
                 <div className="flex-grow">
-                  <h3 className="font-semibold">{item.title}</h3>
+                  <h3 className="font-semibold">{item.title || item.name}</h3>
                   <p className="text-sm text-gray-500">
                     Quantity: {item.quantity}
                   </p>
@@ -58,7 +58,9 @@ const CartPage = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => removeItem(Number(item.id))}
+                  onClick={() =>
+                    removeItem(item.id ?? item.sku ?? item.name)
+                  }
                 >
                   <Trash2 className="h-5 w-5 text-red-500" />
                 </Button>

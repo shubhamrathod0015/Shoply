@@ -7,6 +7,9 @@ import productRoutes from "./routes/products.js";
 import categoryRoutes from "./routes/category.js";
 import cartRoutes from "./routes/cart.js";
 import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/users.js";
+import orderRoutes from "./routes/orders.js";
+import profileRoutes from "./routes/profile.js";
 
 // Middleware
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
@@ -28,6 +31,9 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/profile", profileRoutes);
 
 // Error handling
 app.use(notFound);

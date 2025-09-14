@@ -7,12 +7,18 @@ import { useProducts } from "../hooks/useProducts";
 
 const HomePage = () => {
   const { products, loading, error } = useProducts();
-  const featuredProducts = products.slice(0, 4); 
+  // Ensure products is always an array
+  const featuredProducts = Array.isArray(products) ? products.slice(0, 4) : [];
+
+  // Helper to get a valid product id for routing
+  const getProductId = (product: any) =>
+    product.id ?? product._id ?? product.sku ?? product.name;
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-16">
+      {/* Hero Section */}
       <section
-        className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl"
+        className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-lg"
         aria-labelledby="hero-heading"
       >
         <div className="grid md:grid-cols-2 items-center gap-8 p-8 md:p-12">
@@ -33,18 +39,24 @@ const HomePage = () => {
                   Shop All Products <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
+              <Link href="/cart">
+                <Button variant="outline" size="lg">
+                  View Cart
+                </Button>
+              </Link>
             </div>
           </div>
           <div className="hidden md:flex justify-center items-center">
             <img
               src="https://placehold.co/500x400/E0E7FF/4F46E5?text=Shoply"
               alt="A collection of featured products"
-              className="rounded-lg object-cover"
+              className="rounded-lg object-cover shadow-md"
             />
           </div>
         </div>
       </section>
 
+      {/* Featured Products Section */}
       <section aria-labelledby="featured-products-heading">
         <div className="flex justify-between items-center mb-6">
           <h2
@@ -63,12 +75,17 @@ const HomePage = () => {
         {error && <p className="text-red-500">Error: {error.message}</p>}
         {!loading && !error && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {featuredProducts.length === 0 ? (
+              <p className="text-gray-500 col-span-full">No products found.</p>
+            ) : (
+              featuredProducts.map((product) => (
+                <ProductCard key={getProductId(product)} product={product} />
+              ))
+            )}
           </div>
         )}
       </section>
+      {/* Add more sections for categories, login/signup, and user profile as you build those APIs */}
     </div>
   );
 };
