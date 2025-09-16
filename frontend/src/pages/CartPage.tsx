@@ -22,7 +22,12 @@ const CartPage = () => {
       </div>
 
       {items.length === 0 ? (
-        <div className="text-center py-16 border-2 border-dashed rounded-lg bg-white shadow">
+        <div className="text-center py-16 border-2 border-dashed rounded-lg bg-white shadow flex flex-col items-center">
+          <img
+            src="https://placehold.co/120x120/E0E7FF/4F46E5?text=🛒"
+            alt="Empty cart"
+            className="mx-auto mb-4"
+          />
           <h2 className="text-2xl font-semibold text-gray-700">
             Your cart is empty.
           </h2>
@@ -30,12 +35,22 @@ const CartPage = () => {
             Looks like you haven't added anything to your cart yet.
           </p>
           <Link href="/products">
-            <Button className="mt-6">Start Shopping</Button>
+            <Button className="mt-6" aria-label="Start Shopping">
+              Start Shopping
+            </Button>
           </Link>
         </div>
       ) : (
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
+            <div className="mb-4 flex items-center justify-between">
+              <span className="text-lg font-semibold text-gray-700">
+                {items.length} item{items.length > 1 ? "s" : ""} in your cart
+              </span>
+              <span className="text-sm text-gray-500">
+                Enjoy fast checkout and secure payment!
+              </span>
+            </div>
             {items.map((item) => (
               <div
                 key={item.id ?? item.sku ?? item.name}
@@ -61,12 +76,17 @@ const CartPage = () => {
                   variant="ghost"
                   size="icon"
                   onClick={() => {
-                    if (typeof item.id === "number") {
-                      removeItem(item.id);
+                    // Remove using the same id logic as your key, and support string or number
+                    const removeId =
+                      item.id ?? item._id ?? item.sku ?? item.name;
+                    if (
+                      typeof removeId === "string" ||
+                      typeof removeId === "number"
+                    ) {
+                      removeItem(removeId);
                     } else {
-                      // Optionally handle the case where id is not a number
                       console.error(
-                        "Cannot remove item: id is not a number",
+                        "Cannot remove item: id is not a string or number",
                         item
                       );
                     }

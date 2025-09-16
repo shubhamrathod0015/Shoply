@@ -33,8 +33,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
     addItem(item);
   };
 
+  const outOfStock = product.stock !== undefined && product.stock <= 0;
+  const isNew =
+    !product.reviews ||
+    (Array.isArray(product.reviews) && product.reviews.length === 0);
+
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow flex flex-col items-center p-5 border border-gray-100">
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow flex flex-col items-center p-5 border border-gray-100 relative">
+      {isNew && (
+        <span className="absolute top-3 right-3 bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-semibold">
+          New
+        </span>
+      )}
       <Link href={`/product/${getProductId(product)}`}>
         <img
           src={product.image}
@@ -54,8 +64,19 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <span className="font-bold text-xl text-blue-700">
           RS- {product.price?.toFixed(2)}
         </span>
-        <Button className="ml-2" onClick={handleAddToCart}>
-          Add to Cart
+        <span
+          className={`ml-2 text-xs px-2 py-1 rounded ${
+            outOfStock ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
+          }`}
+        >
+          {outOfStock ? "Out of Stock" : `Stock: ${product.stock ?? "N/A"}`}
+        </span>
+        <Button
+          className="ml-2"
+          onClick={handleAddToCart}
+          disabled={outOfStock}
+        >
+          {outOfStock ? "Out of Stock" : "Add to Cart"}
         </Button>
       </div>
     </div>

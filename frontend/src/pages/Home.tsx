@@ -1,40 +1,19 @@
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import ProductCard from "../components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { useProducts } from "../hooks/useProducts";
 import { useAuth } from "../context/AuthContext";
-import { useEffect, useState } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL;
+
 
 const HomePage = () => {
   const { products, loading, error } = useProducts();
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
   const featuredProducts = Array.isArray(products) ? products.slice(0, 4) : [];
 
-  const [profile, setProfile] = useState<{
-    name: string;
-    email: string;
-  } | null>(null);
-
-  useEffect(() => {
-    if (isAuthenticated && token) {
-      fetch(`${API_URL}/api/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => (res.ok ? res.json() : null))
-        .then((data) => {
-          if (data) setProfile({ name: data.name, email: data.email });
-        })
-        .catch(() => setProfile(null));
-    } else {
-      setProfile(null);
-    }
-  }, [isAuthenticated, token]);
+  // Removed unused profile state and related useEffect.
 
   const getProductId = (product: any) =>
     product.id ?? product._id ?? product.sku ?? product.name;

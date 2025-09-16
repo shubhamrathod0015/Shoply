@@ -8,7 +8,7 @@ import { useAuth } from "../context/AuthContext";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const ProductDetailPage = () => {
-  const [match, paramsRaw] = useRoute("/product/:id");
+  const [, paramsRaw] = useRoute("/product/:id");
   const productId = paramsRaw?.id;
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -65,6 +65,10 @@ const ProductDetailPage = () => {
     if (typeof rating === "object" && rating !== null) return rating.count;
     return Array.isArray(product.reviews) ? product.reviews.length : 0;
   };
+  const outOfStock = product.stock !== undefined && product.stock <= 0;
+  const isNew =
+    !product.reviews ||
+    (Array.isArray(product.reviews) && product.reviews.length === 0);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -77,6 +81,11 @@ const ProductDetailPage = () => {
           />
         </div>
         <div className="flex flex-col justify-center">
+          {isNew && (
+            <span className="mb-2 inline-block bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-semibold">
+              New
+            </span>
+          )}
           <span className="text-sm font-medium text-blue-600 uppercase tracking-wide mb-2">
             {typeof product.category === "object" && product.category !== null
               ? (product.category as { name?: string }).name ?? ""
@@ -88,6 +97,15 @@ const ProductDetailPage = () => {
           <div className="flex items-center gap-2 text-gray-600 mb-4">
             <span>⭐ {getRating(product.rating)}</span>
             <span>({getReviewCount(product.rating)} reviews)</span>
+            <span
+              className={`ml-2 text-xs px-2 py-1 rounded ${
+                outOfStock
+                  ? "bg-red-100 text-red-700"
+                  : "bg-blue-100 text-blue-700"
+              }`}
+            >
+              {outOfStock ? "Out of Stock" : `Stock: ${product.stock ?? "N/A"}`}
+            </span>
           </div>
           <p className="text-gray-700 text-lg mb-6">{product.description}</p>
           <div className="flex items-center gap-4">
@@ -114,8 +132,9 @@ const ProductDetailPage = () => {
                   quantity: 1,
                 } as any);
               }}
+              disabled={outOfStock}
             >
-              Add to Cart
+              {outOfStock ? "Out of Stock" : "Add to Cart"}
             </Button>
           </div>
         </div>

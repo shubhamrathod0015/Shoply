@@ -6,11 +6,16 @@ const ProductsPage = () => {
   const { products, loading, error } = useProducts();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("default");
+  const [inStockOnly, setInStockOnly] = useState(false);
 
   const filteredAndSortedProducts = useMemo(() => {
     let result = products.filter((product) => {
       const title = product.title || product.name || "";
-      return title.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = title
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesStock = !inStockOnly || (product.stock ?? 0) > 0;
+      return matchesSearch && matchesStock;
     });
 
     switch (sortOrder) {
@@ -39,7 +44,7 @@ const ProductsPage = () => {
     }
 
     return result;
-  }, [products, searchTerm, sortOrder]);
+  }, [products, searchTerm, sortOrder, inStockOnly]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -71,22 +76,37 @@ const ProductsPage = () => {
           <option value="name-asc">Name: A to Z</option>
           <option value="name-desc">Name: Z to A</option>
         </select>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={inStockOnly}
+            onChange={(e) => setInStockOnly(e.target.checked)}
+            className="accent-blue-600"
+          />
+          In Stock Only
+        </label>
       </div>
 
       {loading && <p className="text-center text-lg">Loading products...</p>}
       {error && (
         <p className="text-center text-red-500">Error: {error.message}</p>
       )}
-      {!loading && !error && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredAndSortedProducts.map((product) => (
-            <ProductCard
-              key={product.id ?? product._id ?? product.sku ?? product.name}
-              product={product}
-            />
-          ))}
-        </div>
-      )}
+      {!loading &&
+        !error &&
+        (filteredAndSortedProducts.length === 0 ? (
+          <p className="text-center text-gray-500 text-lg">
+            No products found.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredAndSortedProducts.map((product) => (
+              <ProductCard
+                key={product.id ?? product._id ?? product.sku ?? product.name}
+                product={product}
+              />
+            ))}
+          </div>
+        ))}
     </div>
   );
 };

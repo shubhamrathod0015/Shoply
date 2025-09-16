@@ -3,7 +3,7 @@ import ProductCard from "../components/ProductCard";
 import { useProducts } from "../hooks/useProducts";
 
 const CategoryPage = () => {
-  const [match, params] = useRoute("/category/:name");
+  const [, params] = useRoute("/category/:name");
   const categoryName = params?.name || "";
   const { products, loading, error } = useProducts(categoryName);
 

@@ -1,3 +1,5 @@
+export type CartItemId = string | number;
+
 export interface Review {
   // reviewer: string;
   // comment: string;
@@ -11,7 +13,7 @@ export interface Review {
 export interface Product {
   brand?: string;
   sku?: string;
-  id?: string | number;
+  id?: CartItemId;
   _id?: string;
   title?: string;
   name?: string;
@@ -23,9 +25,10 @@ export interface Product {
   category: string | { _id?: string; name?: string };
   image: string;
   rating?: number | { rate: number; count: number };
-  stock?: number;
+  stock?: number; // default: 0 means out of stock
 }
 
 export interface CartItem extends Product {
+  id: CartItemId; // Ensure id is always string | number for cart items
   quantity: number;
 }
